@@ -112,47 +112,54 @@ public class gameTetrisLogic : MonoBehaviour {
 		int randFigure = Random.Range(0,6); //генератор рандома для спавна случайной фигуры
 		int height = _board.GetLength(1)-4;
 		int positionX = _board.GetLength(0)/2-1;
+		_pivot = new GameObject("RotateAround"); //Pivot of the shape
 		//******
 
 		//******
 
 		if (randFigure == 0) { // не знаю как описать. 2*2, - Z. голубой
+			_pivot.transform.position = new Vector3(positionX,height+1, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.cyan));
 			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.cyan));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.cyan));
 			_figures.Add(FigureClone(new Vector3(positionX-1, height+1,0),Color.cyan));
 
 		} else if (randFigure == 1) { // не знаю как описать. 2*2, - S. Розовый
+			_pivot.transform.position = new Vector3(positionX,height+1, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.magenta));
 			_figures.Add(FigureClone(new Vector3(positionX-1, height,0),Color.magenta));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.magenta));
 			_figures.Add(FigureClone(new Vector3(positionX+1, height+1,0),Color.magenta));
 
 		} else if (randFigure == 2) { // т образный , - T. Красный
+			_pivot.transform.position = new Vector3(positionX,height, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.red));
 			_figures.Add(FigureClone(new Vector3(positionX-1, height,0),Color.red));
 			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.red));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.red));
 
 		} else if (randFigure == 3) { // прямая фигура - кубики в ряд, - I. Синий
-
+			_pivot.transform.position = new Vector3(positionX+0.5f,height+1.5f, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.blue));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.blue));
 			_figures.Add(FigureClone(new Vector3(positionX, height+2,0),Color.blue));
 			_figures.Add(FigureClone(new Vector3(positionX, height+3,0),Color.blue));
 
 		} else if (randFigure == 4) { // L образная, - L. Серый
+			_pivot.transform.position = new Vector3(positionX,height+1, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.grey));
 			_figures.Add(FigureClone(new Vector3(positionX-1, height,0),Color.grey));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.grey));
 			_figures.Add(FigureClone(new Vector3(positionX, height+2,0),Color.grey));
 		
 		} else if (randFigure == 5) { // J образная, - J. Жёлтый
+			_pivot.transform.position = new Vector3(positionX,height+2, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.yellow));
 			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.yellow));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.yellow));
 			_figures.Add(FigureClone(new Vector3(positionX, height+2,0),Color.yellow));
 		} else if (randFigure == 6) { // квадрат, - Q. Зелёный
+			_pivot.transform.position = new Vector3(positionX+0.5f,height+0.5f, 0);
 			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.green));
 			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.green));
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.green));
@@ -186,7 +193,8 @@ public class gameTetrisLogic : MonoBehaviour {
 			vec3 = new Vector3(Mathf.RoundToInt(vec3.x),Mathf.RoundToInt(vec3.y-1.0f),vec3.z);
 			vec4 = new Vector3(Mathf.RoundToInt(vec4.x),Mathf.RoundToInt(vec4.y-1.0f),vec4.z);
 			
-
+		_pivot.transform.position = new Vector3(_pivot.transform.position.x, _pivot.transform.position.y-1, _pivot.transform.position.z);
+			
 			_figures[0].transform.position = vec1;
 			_figures[1].transform.position = vec2; 
 			_figures[2].transform.position = vec3; 
@@ -197,7 +205,8 @@ public class gameTetrisLogic : MonoBehaviour {
 			//Блок во что-то врезался 
 			
 			
-
+			Destroy(_pivot.gameObject); //уничтожаем точку пивот
+			
 			//записываем идентификаторы для обноружения столкновения
 			_board[Mathf.RoundToInt(vec1.x),Mathf.RoundToInt(vec1.y)]=1;
 			_board[Mathf.RoundToInt(vec2.x),Mathf.RoundToInt(vec2.y)]=1;
@@ -247,7 +256,9 @@ public class gameTetrisLogic : MonoBehaviour {
 					vec2.x -= 1;
 					vec3.x -= 1;
 					vec4.x -= 1;
-
+					
+					_pivot.transform.position = new Vector3 (_pivot.transform.position.x - 1, _pivot.transform.position.y, _pivot.transform.position.z);
+					
 					_figures [0].transform.position = vec1;
 					_figures [1].transform.position = vec2; 
 					_figures [2].transform.position = vec3; 
@@ -264,7 +275,8 @@ public class gameTetrisLogic : MonoBehaviour {
 					vec3.x += 1;
 					vec4.x += 1;
 					
-
+					_pivot.transform.position = new Vector3 (_pivot.transform.position.x + 1, _pivot.transform.position.y, _pivot.transform.position.z);
+					
 					_figures [0].transform.position = vec1;
 					_figures [1].transform.position = vec2; 
 					_figures [2].transform.position = vec3; 
@@ -272,6 +284,11 @@ public class gameTetrisLogic : MonoBehaviour {
 					
 					
 				}
+			}
+			if(Input.GetKeyDown(KeyCode.Space)){
+				// вращаем фигуру, передаём каждый блок
+				Rotate(_figures[0].transform,_figures[1].transform,_figures[2].transform,_figures[3].transform);
+				
 			}
 		}
 			
@@ -302,6 +319,85 @@ public class gameTetrisLogic : MonoBehaviour {
 			}
 		}
 		return true;
+	}
+
+	void Rotate(Transform vec1, Transform vec2, Transform vec3, Transform vec4){
+		
+		
+		//Устанавливаем родителя 
+		vec1.parent = _pivot.transform;
+		vec2.parent = _pivot.transform;
+		vec3.parent = _pivot.transform;
+		vec4.parent = _pivot.transform;
+		
+		_curRotation +=90;//вращаем на 90 градусов
+		if(_curRotation==360){ //если сделали полный оборот - обнуляем
+			_curRotation = 0;
+		}
+		
+		_pivot.transform.localEulerAngles = new Vector3(0,0,_curRotation);
+		
+		vec1.parent = null;
+		vec2.parent = null;
+		vec3.parent = null;
+		vec4.parent = null;
+		
+		if(CheckRotate(vec1.position,vec2.position,vec3.position,vec4.position) == false){
+
+			vec1.parent = _pivot.transform;
+			vec2.parent = _pivot.transform;
+			vec3.parent = _pivot.transform;
+			vec4.parent = _pivot.transform;
+			
+			_curRotation-=90;
+			_pivot.transform.localEulerAngles = new Vector3(0,0,_curRotation);
+			
+			vec1.parent = null;
+			vec2.parent = null;
+			vec3.parent = null;
+			vec4.parent = null;
+		}
+	} 
+	
+	
+	bool CheckRotate(Vector3 vec1, Vector3 vec2, Vector3 vec3, Vector3 vec4){
+		if(Mathf.RoundToInt(vec1.x)<_board.GetLength(0)-1){//Проверяем, являются ли блоки внутри игрового поля при 
+			if(_board[Mathf.RoundToInt(vec1.x),Mathf.RoundToInt(vec1.y)]==1){
+				//если объект вращения задевает преграду
+				return false; 
+			}
+		}
+		else{//если объект вне игровой доски-зоны
+			return false;
+		}
+		if(Mathf.RoundToInt(vec2.x)<_board.GetLength(0)-1){
+			if(_board[Mathf.RoundToInt(vec2.x),Mathf.RoundToInt(vec2.y)]==1){
+				return false; 
+			}
+		}
+		else{
+			return false;
+		}
+		if(Mathf.RoundToInt(vec3.x)<_board.GetLength(0)-1){
+			if(_board[Mathf.RoundToInt(vec3.x),Mathf.RoundToInt(vec3.y)]==1){
+				
+				return false; 
+			}
+		}
+		else{
+			return false;
+		}
+		if(Mathf.RoundToInt(vec4.x)<_board.GetLength(0)-1){
+			if(_board[Mathf.RoundToInt(vec4.x),Mathf.RoundToInt(vec4.y)]==1){
+				
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
+		
+		return true; //иначе мы можем крутить
 	}
 
 
