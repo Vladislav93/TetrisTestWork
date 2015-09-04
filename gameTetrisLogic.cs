@@ -28,10 +28,10 @@ public class gameTetrisLogic : MonoBehaviour {
 	public bool _spawn;
 	
 	//Секунды до спавна следующей фигуры
-	public float _nextFigureTimeSpawn = 0.5f;
+	public float _nextFigureTimeSpawn;
 	
 	//Скорость падения блоков
-	public float _figureSpeed = 0.5f;
+	public float _figureSpeed;
 	
 	//Уровень по высоте для "потрачено". когда игрок проигрывает.
 	public int _bustedHeight = 22; //20 клеток игрвое поле + граница сверху и снизу
@@ -89,6 +89,37 @@ public class gameTetrisLogic : MonoBehaviour {
 					cube.transform.parent = transform;
 				}
 			}
+		}
+	}
+
+	//**************
+	// алгоритм генерации поля, с некоторыми изменениями, взят из тестового задания про которое я говорил. Так уж маленький чит, но надеюсь это не страшно...
+	//**************
+
+	// Генерация фигур
+
+	void FigureRandomSpawn(){
+		int randFigure = Random.Range(0,6); //генератор рандома для спавна случайной фигуры
+
+		//******
+		// информация с сайта 
+		//http://mech.math.msu.su/~shvetz/54/inf/perl-problems/chTetris.xhtml
+		//******
+
+		if (randFigure == 0) { // не знаю как описать. 2*2, - Z. голубой
+		
+		} else if (randFigure == 1) { // не знаю как описать. 2*2, - S. Розовый
+		
+		} else if (randFigure == 2) { // т образный , - T. Красный
+		
+		} else if (randFigure == 3) { // прямая фигура - кубики в ряд, - I. Синий
+		
+		} else if (randFigure == 4) { // L образная, - L. Серый
+		
+		} else if (randFigure == 5) { // J образная, - J. Жёлтый
+
+		} else if (randFigure == 6) { // квадрат, - Q. Зелёный
+		
 		}
 	}
 
