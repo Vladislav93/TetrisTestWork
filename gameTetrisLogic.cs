@@ -39,8 +39,11 @@ public class gameTetrisLogic : MonoBehaviour {
 	//Переходит в "true", если игра закончилась
 	private bool _busted;
 	
-	
-	
+	// добавляем список
+	private List<Transform> _figures = new List<Transform>();
+	private GameObject _pivot;
+	public Transform _block;
+	private int _curRotation = 0;
 	// остальные переменные будем добавлять по мере надобности. Это что на вскидку пришло в голову.
 	
 	void Start () {
@@ -73,7 +76,7 @@ public class gameTetrisLogic : MonoBehaviour {
 						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 						cube.transform.position = new Vector3(i,j,0);
 						Material material = new Material(Shader.Find("Diffuse"));
-						material.color = Color.magenta; // цвет от балды. пусть немного поболят глаза. чёрный лучше, но скучнее. Я не дизайнер)
+						material.color = Color.black; // кислотный цвет понадобился для фигуры. чёрный.
 						cube.GetComponent<Renderer>().material = material;
 						cube.transform.parent = transform;
 						
@@ -84,7 +87,7 @@ public class gameTetrisLogic : MonoBehaviour {
 					GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 					cube.transform.position = new Vector3(i,j,0);
 					Material material = new Material(Shader.Find("Diffuse"));
-					material.color = Color.magenta;
+					material.color = Color.black;
 					cube.GetComponent<Renderer>().material = material;
 					cube.transform.parent = transform;
 				}
@@ -96,34 +99,85 @@ public class gameTetrisLogic : MonoBehaviour {
 	// алгоритм генерации поля, с некоторыми изменениями, взят из тестового задания про которое я говорил. Так уж маленький чит, но надеюсь это не страшно...
 	//**************
 
-	// Генерация фигур
+	/// <summary>
+	/// Генерация фигур
+	/// </summary>
 
 	void FigureRandomSpawn(){
 		int randFigure = Random.Range(0,6); //генератор рандома для спавна случайной фигуры
-
+		int height = _board.GetLength(1)-4;
+		int positionX = _board.GetLength(0)/2-1;
 		//******
-		// информация с сайта 
-		//http://mech.math.msu.su/~shvetz/54/inf/perl-problems/chTetris.xhtml
+
 		//******
 
 		if (randFigure == 0) { // не знаю как описать. 2*2, - Z. голубой
-		
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.cyan));
+			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.cyan));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.cyan));
+			_figures.Add(FigureClone(new Vector3(positionX-1, height+1,0),Color.cyan));
+
 		} else if (randFigure == 1) { // не знаю как описать. 2*2, - S. Розовый
-		
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.magenta));
+			_figures.Add(FigureClone(new Vector3(positionX-1, height,0),Color.magenta));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.magenta));
+			_figures.Add(FigureClone(new Vector3(positionX+1, height+1,0),Color.magenta));
+
 		} else if (randFigure == 2) { // т образный , - T. Красный
-		
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.red));
+			_figures.Add(FigureClone(new Vector3(positionX-1, height,0),Color.red));
+			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.red));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.red));
+
 		} else if (randFigure == 3) { // прямая фигура - кубики в ряд, - I. Синий
-		
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.blue));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.blue));
+			_figures.Add(FigureClone(new Vector3(positionX, height+2,0),Color.blue));
+			_figures.Add(FigureClone(new Vector3(positionX, height+3,0),Color.blue));
+
 		} else if (randFigure == 4) { // L образная, - L. Серый
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.grey));
+			_figures.Add(FigureClone(new Vector3(positionX-1, height,0),Color.grey));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.grey));
+			_figures.Add(FigureClone(new Vector3(positionX, height+2,0),Color.grey));
 		
 		} else if (randFigure == 5) { // J образная, - J. Жёлтый
-
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.yellow));
+			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.yellow));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.yellow));
+			_figures.Add(FigureClone(new Vector3(positionX, height+2,0),Color.yellow));
 		} else if (randFigure == 6) { // квадрат, - Q. Зелёный
-		
+			_figures.Add(FigureClone(new Vector3(positionX, height,0),Color.green));
+			_figures.Add(FigureClone(new Vector3(positionX+1, height,0),Color.green));
+			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.green));
+			_figures.Add(FigureClone(new Vector3(positionX+1, height+1,0),Color.green));
 		}
 	}
 
-	void Update () {
+	Transform FigureClone(Vector3 pos, Color clr){
 		
+		Transform figBlock = (Transform)Instantiate(_block.transform, pos, Quaternion.identity) as Transform;
+		figBlock.tag = "FigBlock"; // добавить в список Тэгов этот тег. Не знаю как его создать процедурно...
+		figBlock.GetComponent<Renderer> ().material.color = clr;
+		
+		return figBlock;
 	}
+
+
+
+	void Update () {
+		if(!_spawn && !_busted){// Если ничего не спавнится и если проиграли не проиграл - спавним фигуры дальше
+			StartCoroutine("Wait");
+			_spawn = true;
+			//скидываем ротацию объекта в нулевое положение
+			_curRotation = 0;
+		}
+
+	}
+
+	IEnumerator Wait(){
+		yield return new WaitForSeconds(_nextFigureTimeSpawn);
+		FigureRandomSpawn();
+	}
+
 }
