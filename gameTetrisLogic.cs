@@ -19,8 +19,8 @@ using System.Collections;
 using System.Collections.Generic; // понадобится дженерик
 
 public class gameTetrisLogic : MonoBehaviour {
-    // Начинаем объявлять переменные. Нам понадобится несколько.
-
+	// Начинаем объявлять переменные. Нам понадобится несколько.
+	
 	//массив рабочего поля "доски"
 	public int[,] _board;
 	
@@ -39,15 +39,60 @@ public class gameTetrisLogic : MonoBehaviour {
 	//Переходит в "true", если игра закончилась
 	private bool _busted;
 	
-
-
+	
+	
 	// остальные переменные будем добавлять по мере надобности. Это что на вскидку пришло в голову.
 	
 	void Start () {
+		// определим массив досик игрового поля, создаём игрвое поле
+
+		_board = new int[12,24]; // так как у нас есть границы сверху и сниузу + место для спавна фигур.
+		CreateGameAreaBoard();//Генерируем игровое поле
+
+	}
+	/// <summary>
+	/// Создание игровой "доски" - Полем с границами, имеющие коллидер
+	/// </summary>
+	void CreateGameAreaBoard(){
 	
+		for(int i=0; i<_board.GetLength(0);i++){
+			for(int j=0; j<_board.GetLength(1);j++){
+				if(i<11 && i>0){
+					if(j>0 && j<_board.GetLength(1)-2){
+						//генерация задней части доски. которая является фоном
+						_board[i,j]=0;
+						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube); // создаём обычный приметив юнити - куб
+						cube.transform.position = new Vector3(i,j,1); // перемещаем его в позицию заданную точку, проходя по матрице. чуть утапливаем вглубь
+						Material material = new Material(Shader.Find("Diffuse")); // создаём новый материал со стандартным шейдером
+						material.color = Color.white; // цвет материала указываем
+						cube.GetComponent<Renderer>().material = material; // присваеваем нашему объекту материал новы
+						cube.transform.parent = transform; // делаем под родительский объект
+					}
+					else if(j<_board.GetLength(1)-2){ // рисуем нижнюю границу
+						_board[i,j]=1;
+						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+						cube.transform.position = new Vector3(i,j,0);
+						Material material = new Material(Shader.Find("Diffuse"));
+						material.color = Color.magenta; // цвет от балды. пусть немного поболят глаза. чёрный лучше, но скучнее. Я не дизайнер)
+						cube.GetComponent<Renderer>().material = material;
+						cube.transform.parent = transform;
+						
+					}
+				}
+				else if((j<_board.GetLength(1)-2)){ // левые и правые границы
+					_board[i,j]=1;
+					GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+					cube.transform.position = new Vector3(i,j,0);
+					Material material = new Material(Shader.Find("Diffuse"));
+					material.color = Color.magenta;
+					cube.GetComponent<Renderer>().material = material;
+					cube.transform.parent = transform;
+				}
+			}
+		}
 	}
 
 	void Update () {
-	
+		
 	}
 }
