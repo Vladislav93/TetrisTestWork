@@ -112,7 +112,7 @@ public class gameTetrisLogic : MonoBehaviour {
 		int randFigure = Random.Range(0,6); //генератор рандома для спавна случайной фигуры
 		int height = _board.GetLength(1)-4;
 		int positionX = _board.GetLength(0)/2-1;
-		_pivot = new GameObject("RotateAround"); //Pivot of the shape
+		_pivot = new GameObject("RotateAround"); //точка вращения
 		//******
 
 		//******
@@ -165,6 +165,12 @@ public class gameTetrisLogic : MonoBehaviour {
 			_figures.Add(FigureClone(new Vector3(positionX, height+1,0),Color.green));
 			_figures.Add(FigureClone(new Vector3(positionX+1, height+1,0),Color.green));
 		}
+		if (_figureSpeed > 0.09f)
+		_figureSpeed -= 0.01f;
+		if (_nextFigureTimeSpawn > 0.2f)
+			_nextFigureTimeSpawn -= 0.1f;
+
+		
 	}
 
 	Transform FigureClone(Vector3 pos, Color clr){
@@ -212,7 +218,11 @@ public class gameTetrisLogic : MonoBehaviour {
 			_board[Mathf.RoundToInt(vec2.x),Mathf.RoundToInt(vec2.y)]=1;
 			_board[Mathf.RoundToInt(vec3.x),Mathf.RoundToInt(vec3.y)]=1;
 			_board[Mathf.RoundToInt(vec4.x),Mathf.RoundToInt(vec4.y)]=1;
-			
+
+
+			checkRow(1); //ghjdthbtv yf pfgjkytyyjcnm
+			checkRow(_bustedHeight); //проверяем на "проигрышь"
+
 			_figures.Clear(); //очищаем список
 			_spawn = false; //готовы отспавнить другой блок
 			
@@ -397,8 +407,54 @@ public class gameTetrisLogic : MonoBehaviour {
 			return false;
 		}
 		
-		return true; //иначе мы можем крутить
+		return true; //иначе - мы можем крутить
 	}
 
+	void checkRow(int value){
+		
+		GameObject[] blocks = GameObject.FindGameObjectsWithTag("FigBlock"); //Все фигуры на сцене
+		int count = 0; //счётчик блоков фигур найденных в строке
+		for(int i=1; i<_board.GetLength(0)-1; i++){//идём по каждой строчке
+			if(_board[i,value]==1){//проверяем на наличе 
+				count++;//если нашли блок увелчичиваем счётчик
+			}
+		}
+		
+		
+		if(value==_bustedHeight && count>0){//если это высшая точка поля и там есть хоть один блок - "потрачено"
+			_busted = true;
+			Application.Quit();
 
+		}
+		
+		if(count==10){//если счётчик увелчилися до 10 - ширины поля
+			//начинаем с низа игровой доски
+			for(int cj=value; cj<_board.GetLength(1)-3; cj++){
+				for(int ci=1; ci<_board.GetLength(0)-1; ci++){
+					foreach(GameObject go in blocks){
+						
+						int height = Mathf.RoundToInt(go.transform.position.y);
+						int xPos = Mathf.RoundToInt(go.transform.position.x);
+						
+						if(xPos == ci && height == cj){
+							
+							if(height == value){//строчка, которую требуется уничтожит
+								_board[xPos,height] = 0;//обнуляем
+								Destroy(go.gameObject);
+							}
+							else if(height > value){
+								_board[xPos,height] = 0;//старую позицию обнуляем
+								_board[xPos,height-1] = 1;//делаем новую позицию
+								go.transform.position = new Vector3(xPos, height-1, go.transform.position.z);//сдвигаем блоки вниз
+							}
+						}
+					}
+				}
+			}
+			checkRow(value); //после продвижения блоков вниз, снова проверяем на заполненность строчки
+		}
+		else if(value+1<_board.GetLength(1)-3){
+			checkRow(value+1); //проверяем строчку над
+		}
+	}
 }
