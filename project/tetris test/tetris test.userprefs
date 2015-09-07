@@ -1,14 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Interface/Source/Score.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Source/BestScoreSave.cs">
     <Files>
-      <File FileName="Assets/Source/gameTetrisLogic.cs" Line="261" Column="24" />
-      <File FileName="Assets/Interface/Source/RestartLevel.cs" Line="21" Column="28" />
-      <File FileName="Assets/Interface/Source/Pause.cs" Line="17" Column="11" />
-      <File FileName="Assets/Interface/Source/RestartLevelAccept.cs" Line="9" Column="3" />
-      <File FileName="Assets/Interface/Source/RestartLevelNotAccept.cs" Line="16" Column="26" />
-      <File FileName="Assets/Interface/NGUI/Scripts/UI/UIPanel.cs" Line="525" Column="1" />
       <File FileName="Assets/Interface/Source/Score.cs" Line="5" Column="1" />
+      <File FileName="Assets/Source/BestScoreSave.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

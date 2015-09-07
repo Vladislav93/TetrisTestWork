@@ -170,7 +170,7 @@
      <Compile Include="Assets\Interface\Source\RestartLevelAccept.cs" />
      <Compile Include="Assets\Interface\Source\RestartLevelNotAccept.cs" />
      <Compile Include="Assets\Interface\Source\Score.cs" />
-     <Compile Include="Assets\Source\gameLogic.cs" />
+     <Compile Include="Assets\Source\BestScoreSave.cs" />
      <Compile Include="Assets\Source\gameTetrisLogic.cs" />
      <None Include="Assets\Interface\NGUI\Resources\Shaders\Unlit - Depth Cutout.shader" />
      <None Include="Assets\Interface\NGUI\Examples\Models\Orc\Orc Skin.shader" />

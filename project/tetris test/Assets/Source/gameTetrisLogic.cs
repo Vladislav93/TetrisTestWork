@@ -48,7 +48,7 @@ public class gameTetrisLogic : MonoBehaviour {
 	private int _curRotation = 0;
 	public Material _brick;
 	public Material _background;
-
+	private BestScoreSave _bestScoreFile;
 	public int _score;
 	// остальные переменные будем добавлять по мере надобности. Это что на вскидку пришло в голову.
 	
@@ -439,7 +439,17 @@ public class gameTetrisLogic : MonoBehaviour {
 		
 		if(value==_bustedHeight && count>0){//если это высшая точка поля и там есть хоть один блок - "потрачено"
 			_busted = true;
-			Application.Quit();
+
+			_bestScoreFile = this.GetComponent<BestScoreSave>();
+
+			int tempScore = _bestScoreFile.ReadBestScore();
+			if (tempScore<_score)
+			{
+				_bestScoreFile.SaveBestScore();
+				_bestScoreFile.WarningWindowsExit(false);
+			}
+			else
+				_bestScoreFile.WarningWindowsExit(true);
 
 		}
 		
