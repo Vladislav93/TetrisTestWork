@@ -18,6 +18,7 @@ public class RestartLevel: Pause {
 	{
 		Application.LoadLevel (0);
 		Time.timeScale = 1;
+		_pauseFlag = !_pauseFlag;
 	}
 	
 	void OnClick()
