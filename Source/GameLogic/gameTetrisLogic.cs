@@ -46,11 +46,15 @@ public class gameTetrisLogic : MonoBehaviour {
 	private GameObject _pivot;
 	public Transform _block;
 	private int _curRotation = 0;
+	public Material _brick;
+	public Material _background;
+	private BestScoreSave _bestScoreFile;
+	public int _score;
 	// остальные переменные будем добавлять по мере надобности. Это что на вскидку пришло в голову.
 	
 	void Start () {
 		// определим массив досик игрового поля, создаём игрвое поле
-
+		_score = 0;
 		_board = new int[12,24]; // так как у нас есть границы сверху и сниузу + место для спавна фигур.
 		CreateGameAreaBoard();//Генерируем игровое поле
 		InvokeRepeating("moveDown",_figureSpeed,_figureSpeed); // 
@@ -73,18 +77,22 @@ public class gameTetrisLogic : MonoBehaviour {
 						_board[i,j]=0;
 						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube); // создаём обычный приметив юнити - куб
 						cube.transform.position = new Vector3(i,j,1); // перемещаем его в позицию заданную точку, проходя по матрице. чуть утапливаем вглубь
-						Material material = new Material(Shader.Find("Diffuse")); // создаём новый материал со стандартным шейдером
-						material.color = Color.white; // цвет материала указываем
-						cube.GetComponent<Renderer>().material = material; // присваеваем нашему объекту материал новы
+
+						//Material material = new Material(Shader.Find("Diffuse")); // создаём новый материал со стандартным шейдером
+						//material.color = Color.white; // цвет материала указываем
+
+						cube.GetComponent<Renderer>().material = _background; // присваеваем нашему объекту материал новы
 						cube.transform.parent = transform; // делаем под родительский объект
 					}
 					else if(j<_board.GetLength(1)-2){ // рисуем нижнюю границу
 						_board[i,j]=1;
 						GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 						cube.transform.position = new Vector3(i,j,0);
-						Material material = new Material(Shader.Find("Diffuse"));
-						material.color = Color.black; // кислотный цвет понадобился для фигуры. чёрный.
-						cube.GetComponent<Renderer>().material = material;
+
+						// Material material = new Material(Shader.Find("Diffuse"));
+						//material.color = Color.black; // кислотный цвет понадобился для фигуры. чёрный.
+
+						cube.GetComponent<Renderer>().material = _brick;
 						cube.transform.parent = transform;
 						
 					}
@@ -93,9 +101,11 @@ public class gameTetrisLogic : MonoBehaviour {
 					_board[i,j]=1;
 					GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 					cube.transform.position = new Vector3(i,j,0);
-					Material material = new Material(Shader.Find("Diffuse"));
-					material.color = Color.black;
-					cube.GetComponent<Renderer>().material = material;
+					//чтобы красивее было
+					//Material material = new Material(Shader.Find("Diffuse"));
+					//material.color = Color.black;
+
+					cube.GetComponent<Renderer>().material = _brick;
 					cube.transform.parent = transform;
 				}
 			}
@@ -236,15 +246,19 @@ public class gameTetrisLogic : MonoBehaviour {
 	bool CheckMove(Vector3 vec1, Vector3 vec2, Vector3 vec3, Vector3 vec4){
 		//если у нас в массиве "1" - значит во что-то фрезалась фигура
 		if(_board[Mathf.RoundToInt(vec1.x),Mathf.RoundToInt(vec1.y-1)]==1){
+			_score = _score + 4;
 			return false;
 		}
 		if(_board[Mathf.RoundToInt(vec2.x),Mathf.RoundToInt(vec2.y-1)]==1){
+			_score = _score + 4;
 			return false;
 		}
 		if(_board[Mathf.RoundToInt(vec3.x),Mathf.RoundToInt(vec3.y-1)]==1){
+			_score = _score + 4;
 			return false;
 		}
 		if(_board[Mathf.RoundToInt(vec4.x),Mathf.RoundToInt(vec4.y-1)]==1){
+			_score = _score + 4;
 			return false;
 		}
 		
@@ -425,7 +439,17 @@ public class gameTetrisLogic : MonoBehaviour {
 		
 		if(value==_bustedHeight && count>0){//если это высшая точка поля и там есть хоть один блок - "потрачено"
 			_busted = true;
-			Application.Quit();
+
+			_bestScoreFile = this.GetComponent<BestScoreSave>();
+
+			int tempScore = _bestScoreFile.ReadBestScore();
+			if (tempScore<_score)
+			{
+				_bestScoreFile.SaveBestScore();
+				_bestScoreFile.WarningWindowsExit(false);
+			}
+			else
+				_bestScoreFile.WarningWindowsExit(true);
 
 		}
 		
@@ -443,6 +467,7 @@ public class gameTetrisLogic : MonoBehaviour {
 							if(height == value){//строчка, которую требуется уничтожит
 								_board[xPos,height] = 0;//обнуляем
 								Destroy(go.gameObject);
+								_score = _score + 10;
 							}
 							else if(height > value){
 								_board[xPos,height] = 0;//старую позицию обнуляем
